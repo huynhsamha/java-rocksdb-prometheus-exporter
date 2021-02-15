@@ -1,8 +1,8 @@
-package io.github.wearenodev.exporters.rocksdb;
+package io.github.huynhsamha.exporters.rocksdb;
 
-import io.github.wearenodev.exporters.rocksdb.handlers.RocksDBStatsServlet;
-import io.github.wearenodev.exporters.rocksdb.managers.RegistryManager;
-import io.github.wearenodev.exporters.rocksdb.models.JRocksDB;
+import io.github.huynhsamha.exporters.rocksdb.handlers.RocksDBStatsServlet;
+import io.github.huynhsamha.exporters.rocksdb.managers.RegistryManager;
+import io.github.huynhsamha.exporters.rocksdb.models.JRocksDB;
 import io.prometheus.client.exporter.MetricsServlet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;

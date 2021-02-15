@@ -1,34 +1,34 @@
-package io.github.wearenodev.exporters.rocksdb.shared.controllers;
+package io.github.huynhsamha.exporters.rocksdb.shared.controllers;
 
-import io.github.wearenodev.exporters.rocksdb.shared.DemoRocksDB;
-import io.github.wearenodev.exporters.rocksdb.shared.entity.ActionInfo;
+import io.github.huynhsamha.exporters.rocksdb.shared.entity.UserInfo;
+import io.github.huynhsamha.exporters.rocksdb.shared.DemoRocksDB;
 import org.apache.commons.lang3.SerializationUtils;
 import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
-public class ActionInfoCtrl {
+public class UserInfoCtrl {
 
     private static final RocksDB db = DemoRocksDB.getDb();
-    private static final ColumnFamilyHandle cfHandle = DemoRocksDB.getCFHandle("ActionInfo");
+    private static final ColumnFamilyHandle cfHandle = DemoRocksDB.getCFHandle("UserInfo");
 
-    public static String buildKey(long actionId) {
-        return String.valueOf(actionId);
+    public static String buildKey(int uid) {
+        return String.valueOf(uid);
     }
 
-    public static byte[] buildBytesKey(long actionId) {
-        return buildKey(actionId).getBytes();
+    public static byte[] buildBytesKey(int uid) {
+        return buildKey(uid).getBytes();
     }
 
-    public static String buildKey(ActionInfo o) {
+    public static String buildKey(UserInfo o) {
         return buildKey(o.getId());
     }
 
-    public static byte[] buildBytesKey(ActionInfo o) {
+    public static byte[] buildBytesKey(UserInfo o) {
         return buildKey(o).getBytes();
     }
 
-    public static byte[] toBytes(ActionInfo o) {
+    public static byte[] toBytes(UserInfo o) {
         try {
             return SerializationUtils.serialize(o);
         } catch (Exception ex) {
@@ -36,7 +36,7 @@ public class ActionInfoCtrl {
         }
     }
 
-    public static ActionInfo fromBytes(byte[] bytes) {
+    public static UserInfo fromBytes(byte[] bytes) {
         try {
             return SerializationUtils.deserialize(bytes);
         } catch (Exception ex) {
@@ -44,7 +44,7 @@ public class ActionInfoCtrl {
         }
     }
 
-    public static void put(ActionInfo o) {
+    public static void put(UserInfo o) {
         byte[] value = toBytes(o);
         if (value == null) return;
         try {
@@ -54,14 +54,14 @@ public class ActionInfoCtrl {
         }
     }
 
-    public static ActionInfo get(long actionId) {
-        byte[] key = buildBytesKey(actionId);
+    public static UserInfo get(int id) {
+        byte[] key = buildBytesKey(id);
         try {
             byte[] value = db.get(cfHandle, key);
             return fromBytes(value);
         } catch (RocksDBException ex) {
             System.err.println(ex);
-            return null;
+            return  null;
         }
     }
 

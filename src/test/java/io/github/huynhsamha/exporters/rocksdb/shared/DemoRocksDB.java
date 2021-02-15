@@ -1,6 +1,6 @@
-package io.github.wearenodev.exporters.rocksdb.shared;
+package io.github.huynhsamha.exporters.rocksdb.shared;
 
-import io.github.wearenodev.exporters.rocksdb.shared.utils.FileUtils;
+import io.github.huynhsamha.exporters.rocksdb.shared.utils.FileUtils;
 import org.rocksdb.*;
 
 import java.util.ArrayList;

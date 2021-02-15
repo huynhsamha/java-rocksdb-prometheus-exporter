@@ -1,4 +1,4 @@
-package io.github.wearenodev.exporters.rocksdb.shared.entity;
+package io.github.huynhsamha.exporters.rocksdb.shared.entity;
 
 import java.io.Serializable;
 

@@ -1,7 +1,6 @@
-package io.github.wearenodev.exporters.rocksdb.models;
+package io.github.huynhsamha.exporters.rocksdb.models;
 
-import io.github.wearenodev.exporters.rocksdb.JRocksDBExporter;
-import io.github.wearenodev.exporters.rocksdb.handlers.RocksDBStatsServlet;
+import io.github.huynhsamha.exporters.rocksdb.handlers.RocksDBStatsServlet;
 import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
 import org.rocksdb.Statistics;

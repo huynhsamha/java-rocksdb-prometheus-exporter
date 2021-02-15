@@ -1,4 +1,4 @@
-package io.github.wearenodev.exporters.rocksdb.shared.utils;
+package io.github.huynhsamha.exporters.rocksdb.shared.utils;
 
 import java.io.File;
 
