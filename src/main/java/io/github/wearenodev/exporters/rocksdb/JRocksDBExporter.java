@@ -11,15 +11,38 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * HTTP Server export RocksDB metrics for Prometheus.
+ */
 public class JRocksDBExporter {
 
     private static final Logger _Logger = Logger.getLogger(JRocksDBExporter.class.getName());
 
+    /**
+     * HTTP port for expose metrics
+     */
     private final int port;
+
+    /**
+     * RocksDB from application, including RocksDB, Statistics and Column Families
+     */
     private final JRocksDB jrocksDB;
+
+    /**
+     * HTTP Server
+     */
     private Server server;
+
+    /**
+     * Flag that marks the server is running
+     */
     private boolean started = false;
 
+    /**
+     * Init exporter information, including HTTP port and RocksDB instance
+     * @param port HTTP port for expose metrics
+     * @param jrocksDB RocksDB from application, including RocksDB, Statistics and Column Families
+     */
     public JRocksDBExporter(int port, JRocksDB jrocksDB) {
         this.port = port;
         this.jrocksDB = jrocksDB;
@@ -35,6 +58,9 @@ public class JRocksDBExporter {
         context.addServlet(new ServletHolder(new RocksDBStatsServlet(RegistryManager.RocksDBStats, jrocksDB)), "/rocksdb_stats");
     }
 
+    /**
+     * Start HTTP Server
+     */
     public void start() {
         if (server == null) setupServer();
         try {
@@ -47,6 +73,9 @@ public class JRocksDBExporter {
         }
     }
 
+    /**
+     * Stop HTTP Server
+     */
     public void stop() {
         if (!started) {
             return;
@@ -61,14 +90,23 @@ public class JRocksDBExporter {
         }
     }
 
+    /**
+     * @return Port that exporter uses
+     */
     public int getPort() {
         return port;
     }
 
+    /**
+     * @return RocksDB information, from application
+     */
     public JRocksDB getJRocksDB() {
         return jrocksDB;
     }
 
+    /**
+     * @return Server is running or not
+     */
     public boolean isStarted() {
         return started;
     }
