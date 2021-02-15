@@ -1,12 +1,20 @@
 plugins {
     id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'signing'
 }
 
-group 'io.github.wearenodev'
-version '0.0.1'
+group 'io.github.huynhsamha'
+version '0.0.1-SNAPSHOT-LOCAL'
 
 repositories {
     mavenCentral()
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 dependencies {
@@ -27,4 +35,73 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'jrocksdb-exporter'
+            from components.java
+            pom {
+                name = 'Java RocksDB Prometheus Exporter'
+                description = 'Prometheus Exporter for RocksJava'
+                url = 'https://github.com/huynhsamha/java-rocksdb-prometheus-exporter/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'huynhsamha'
+                        name = 'Ha Huynh'
+                        email = 'huynhsamha@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/huynhsamha/java-rocksdb-prometheus-exporter.git'
+                    developerConnection = 'scm:git:ssh://github.com/huynhsamha/java-rocksdb-prometheus-exporter.git'
+                    url = 'https://github.com/huynhsamha/java-rocksdb-prometheus-exporter/'
+                }
+                issueManagement {
+                    system = 'GitHub'
+                    url = 'https://github.com/huynhsamha/java-rocksdb-prometheus-exporter/issues'
+                }
+                organization {
+                    name = 'io.github.huynhsamha'
+                    url = 'https://github.com/huynhsamha'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            def localReleasesRepoUrl = "$buildDir/repos/releases"
+            def localSnapshotsRepoUrl = "$buildDir/repos/snapshots"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+
+            url = version.endsWith('LOCAL') ?
+                    (version.endsWith('SNAPSHOT-LOCAL') ? localSnapshotsRepoUrl : localReleasesRepoUrl)
+                    :
+                    (version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl)
+
+            credentials {
+                username "$sonatypeUsername"
+                password "$sonatypePassword"
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
 }
