@@ -34,7 +34,7 @@ public class RocksDBStatsServlet extends MetricsServlet {
             .labelNames("ticker")
             .create().register(Registry);
 
-    private static final Set<String> LastCFNames = new HashSet<>();
+    private static final Set<String> CurrCFNames = new HashSet<>();
 
     private final JRocksDB jrocksDB;
 
@@ -42,35 +42,36 @@ public class RocksDBStatsServlet extends MetricsServlet {
         super(registry);
         this.jrocksDB = jrocksDB;
 
-        updateLastCFNames(this.jrocksDB);
+        updateCurrentCFNames(this.jrocksDB);
     }
 
-    private static void updateLastCFNames(JRocksDB jrocksDB) {
-        synchronized (LastCFNames) {
-            LastCFNames.clear();
+    private static void updateCurrentCFNames(JRocksDB jrocksDB) {
+        _Logger.info("Current CF Names: " + CurrCFNames);
+        synchronized (CurrCFNames) {
+            CurrCFNames.clear();
             List<ColumnFamilyHandle> listCFHandles = jrocksDB.getListCFHandles();
             for (ColumnFamilyHandle cfHandle : listCFHandles) {
                 try {
                     String cfName = new String(cfHandle.getName());
-                    LastCFNames.add(cfName);
+                    CurrCFNames.add(cfName);
                 } catch (RocksDBException ex) {
                     _Logger.warning("Exception ex=" + ex.getMessage());
                 }
             }
         }
+        _Logger.info("Updated CF Names: " + CurrCFNames);
     }
 
     public static void onChangeListCFHandles(JRocksDB jrocksDB) {
         _Logger.info("onChangeListCFHandles");
-        Set<String> __LastCFNames = new HashSet<>();
-        __LastCFNames.addAll(LastCFNames);
+        Set<String> LastCFNames = new HashSet<>();
+        LastCFNames.addAll(CurrCFNames);
 
-        updateLastCFNames(jrocksDB);
+        updateCurrentCFNames(jrocksDB);
 
         List<String> props = RocksDBProperties.SORTED_ROCKSDB_PROPERTIES;
-        for (String cfName : __LastCFNames) {
-            if (!LastCFNames.contains(cfName)) {
-                // CF is dropped
+        for (String cfName : LastCFNames) {
+            if (!CurrCFNames.contains(cfName)) { // CF is dropped
                 for (String prop : props) {
                     GaugeProperties.remove(cfName, prop);
                 }

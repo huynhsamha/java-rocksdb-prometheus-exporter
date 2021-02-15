@@ -1,10 +1,12 @@
 package io.github.wearenodev.exporters.rocksdb.shared;
 
+import io.github.wearenodev.exporters.rocksdb.models.JRocksDB;
 import io.github.wearenodev.exporters.rocksdb.shared.controllers.ActionInfoCtrl;
 import io.github.wearenodev.exporters.rocksdb.shared.controllers.UserActionCtrl;
 import io.github.wearenodev.exporters.rocksdb.shared.controllers.UserInfoCtrl;
 import io.github.wearenodev.exporters.rocksdb.shared.entity.ActionInfo;
 import io.github.wearenodev.exporters.rocksdb.shared.entity.UserInfo;
+import org.rocksdb.ColumnFamilyHandle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ public class MockDemoRocksDB {
     }
 
     static UserInfo genUser(int i) {
-        return  new UserInfo(i, "User " + i);
+        return new UserInfo(i, "User " + i);
     }
 
     static ActionInfo genAction(int uid, int order) {
@@ -67,7 +69,7 @@ public class MockDemoRocksDB {
         for (UserInfo u : users) {
             List<ActionInfo> actions = UserActionCtrl.scan(u.getId());
             System.out.println("Scan actions of user " + u);
-            for (ActionInfo act: actions) {
+            for (ActionInfo act : actions) {
                 System.out.println(">>> " + act);
             }
         }
@@ -112,6 +114,37 @@ public class MockDemoRocksDB {
         scheduler.scheduleAtFixedRate(() -> {
             getDBCurrUser();
         }, 1, 1, TimeUnit.SECONDS);
+    }
+
+    public static void scheduleChangeCF(JRocksDB jRocksDB) {
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(4);
+
+        String cfName = "TestCF";
+
+        scheduler.schedule(() -> {
+            System.out.println("\n\nTest addNewCFHandles\n\n");
+            ColumnFamilyHandle cfHandle = DemoRocksDB.addNewCF(cfName);
+            jRocksDB.addNewCFHandles(cfHandle);
+        }, 10, TimeUnit.SECONDS);
+
+        scheduler.schedule(() -> {
+            System.out.println("\n\nTest removeCFHandles\n\n");
+            ColumnFamilyHandle cfHandle = DemoRocksDB.removeCF(cfName);
+            jRocksDB.removeCFHandles(cfHandle);
+        }, 20, TimeUnit.SECONDS);
+
+        scheduler.schedule(() -> {
+            System.out.println("\n\nTest setListCFHandles [add]\n\n");
+            DemoRocksDB.addNewCF(cfName);
+            jRocksDB.setListCFHandles(DemoRocksDB.getCfHandles());
+        }, 30, TimeUnit.SECONDS);
+
+        scheduler.schedule(() -> {
+            System.out.println("\n\nTest setListCFHandles [remove]\n\n");
+            DemoRocksDB.removeCF(cfName);
+            jRocksDB.setListCFHandles(DemoRocksDB.getCfHandles());
+        }, 40, TimeUnit.SECONDS);
+
     }
 
     public static void main(String[] args) {

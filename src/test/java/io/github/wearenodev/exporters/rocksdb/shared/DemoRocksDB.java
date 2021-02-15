@@ -78,6 +78,33 @@ public class DemoRocksDB {
         mapCFHandles.put("ActionInfo", cfHandles.get(3));
     }
 
+    public static ColumnFamilyHandle addNewCF(String cfName) {
+        ColumnFamilyDescriptor cfDesc = createCFDesc(cfName);
+        try {
+            ColumnFamilyHandle cfHandle = db.createColumnFamily(cfDesc);
+            cfDescriptors.add(cfDesc);
+            cfHandles.add(cfHandle);
+            mapCFHandles.put(cfName, cfHandle);
+            return cfHandle;
+
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ColumnFamilyHandle removeCF(String cfName) {
+        ColumnFamilyHandle cfHandle = mapCFHandles.get(cfName);
+        try {
+            db.dropColumnFamily(cfHandle);
+            cfHandles.remove(cfHandle);
+            mapCFHandles.remove(cfName);
+        } catch (RocksDBException e) {
+            e.printStackTrace();
+        }
+        return cfHandle;
+    }
+
     public static ColumnFamilyHandle getCFHandle(String cfName) {
         return mapCFHandles.getOrDefault(cfName, null);
     }

@@ -65,7 +65,7 @@ public class JRocksDBExporter {
         return port;
     }
 
-    public JRocksDB getJrocksDB() {
+    public JRocksDB getJRocksDB() {
         return jrocksDB;
     }
 

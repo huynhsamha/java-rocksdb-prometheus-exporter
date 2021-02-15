@@ -6,6 +6,7 @@ import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
 import org.rocksdb.Statistics;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -35,17 +36,22 @@ public class JRocksDB {
         return listCFHandles;
     }
 
+    private synchronized void onChangeListCFHandles() {
+        RocksDBStatsServlet.onChangeListCFHandles(this);
+    }
+
     public void setListCFHandles(List<ColumnFamilyHandle> newListCFHandles) {
         _Logger.info("setListCFHandles: newListCFHandles=" + newListCFHandles);
         if (newListCFHandles == null) {
             _Logger.warning("setListCFHandles: New list CF Handles is null!");
             return;
         }
+        List<ColumnFamilyHandle> cloneNewListCFHandles = new ArrayList<>(newListCFHandles);
         synchronized (listCFHandles) {
             listCFHandles.clear();
-            listCFHandles.addAll(newListCFHandles);
-            RocksDBStatsServlet.onChangeListCFHandles(this);
+            listCFHandles.addAll(cloneNewListCFHandles);
         }
+        onChangeListCFHandles();
     }
 
     public void addNewCFHandles(ColumnFamilyHandle newCFHandle) {
@@ -57,6 +63,7 @@ public class JRocksDB {
         synchronized (listCFHandles) {
             listCFHandles.add(newCFHandle);
         }
+        onChangeListCFHandles();
     }
 
     public void removeCFHandles(ColumnFamilyHandle cfHandle) {
@@ -67,8 +74,8 @@ public class JRocksDB {
         }
         synchronized (listCFHandles) {
             listCFHandles.remove(cfHandle);
-            RocksDBStatsServlet.onChangeListCFHandles(this);
         }
+        onChangeListCFHandles();
     }
 
 }

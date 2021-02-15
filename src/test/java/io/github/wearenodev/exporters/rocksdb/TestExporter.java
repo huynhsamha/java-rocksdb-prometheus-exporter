@@ -35,6 +35,9 @@ public class TestExporter {
             // update + query DB in background
             MockDemoRocksDB.doBackgroundJob();
 
+            // test change CF
+            MockDemoRocksDB.scheduleChangeCF(jRocksDB);
+
         } catch (Exception ex) {
             System.err.println(ex);
         }
